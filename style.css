@@ -1,0 +1,22 @@
+html,
+body {
+    font-family: "Rubik", sans-serif;
+}
+
+.logo-orange{
+    color: rgb(255, 55, 0)
+}
+
+.logo-bold {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.fa-headphones {
+    color: black;
+}
+
+.btn-orange {
+    color: white;
+    background-color: rgb(255, 55, 0);
+}
