@@ -151,11 +151,11 @@ class Store {
 }
 
 
-// Event: Display Books
+// Event: Display Records
 document.addEventListener('DOMContentLoaded', UI.displayRecords);
 
 
-// Event: Add a Book
+// Event: Add a Record
 document
     // (you can chain methods together)
     .querySelector('#record-form')
@@ -194,7 +194,7 @@ document
     });
 
 
-// Event: Remove a Book
+// Event: Remove a Record
 document
     .querySelector('#record-list')
     .addEventListener('click', e => {
