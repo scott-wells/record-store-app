@@ -13,31 +13,33 @@ class Record {
 class UI {
     static displayRecords() {
         
-        // this hard coded array of data will be replaced by localstorage
-        const StoredRecords = [ 
-            {
-                artist: 'Mutemath',
-                album: 'Mutemath',
-                year: 2006
-            },
-            {
-                artist: 'Mutemath',
-                album: 'Armistice',
-                year: 2009
-            },
-            {
-                artist: 'Mutemath',
-                album: 'Odd Soul',
-                year: 2011
-            },
-            {
-                artist: 'Mutemath',
-                album: 'Vitals',
-                year: 2015
-            }
-        ];
+        // // this hard coded array of data will be replaced by localstorage
+        // const StoredRecords = [ 
+        //     {
+        //         artist: 'Mutemath',
+        //         album: 'Mutemath',
+        //         year: 2006
+        //     },
+        //     {
+        //         artist: 'Mutemath',
+        //         album: 'Armistice',
+        //         year: 2009
+        //     },
+        //     {
+        //         artist: 'Mutemath',
+        //         album: 'Odd Soul',
+        //         year: 2011
+        //     },
+        //     {
+        //         artist: 'Mutemath',
+        //         album: 'Vitals',
+        //         year: 2015
+        //     }
+        // ];
 
-        const records = StoredRecords; // store data in an easy variable
+        // const records = StoredRecords; // store data in an easy variable
+
+        const records = Store.getRecords();
 
         // loop over data and peform method on each item in the array
         records.forEach(record => UI.addRecordToList(record));
@@ -86,6 +88,9 @@ class UI {
         const container = document.querySelector('.container');
         const form = document. querySelector('#record-form');
         container.insertBefore(div, form);
+
+        // vanish the alert
+        setTimeout(() => document.querySelector('.alert').remove(), 3000);
     }
 
     static clearFields() {
@@ -97,6 +102,54 @@ class UI {
 
 
 // Store Class: Handles Storage
+// you cannot store objects in 'localStorage', SO...
+// must stringify JSON to store
+// must parse JSON to pull it out
+// ALSO, 'localStorage' methods use key value pairs
+class Store {
+    static getRecords() {
+        // initialize the variable
+        let records;
+
+        // look at 'localStorage'
+        // if there's nothing in it - null - then set it to an empty array
+        // else get the data in 'localStorage' and put it in 'records'
+        // return the value
+        if(localStorage.getItem('records') === null) {
+            records = [];
+        } else {
+            records = JSON.parse(localStorage.getItem('records'));
+        }
+
+        return records;
+    }
+
+    static addRecord(record) {
+       const records = Store.getRecords();
+       
+       // push the record onto the array (.getRecords() made it an array)
+       records.push(record);
+
+       //reset localStorage
+       localStorage.setItem('records', JSON.stringify(records));
+    }
+
+    static removeRecord(album) {
+        const records = Store.getRecords();
+
+        // loop through the array
+        // if the album name matches the album in the array, splice it out at its index
+        records.forEach((record, index) => {
+            if(record.album === album) {
+                records.splice(index, 1);
+            }
+        });
+
+        // reset localStorage
+        localStorage.setItem('records', JSON.stringify(records));
+    }
+}
+
 
 // Event: Display Books
 document.addEventListener('DOMContentLoaded', UI.displayRecords);
@@ -126,6 +179,12 @@ document
             // add record to UI
             UI.addRecordToList(record);
 
+            // add record to localStorage
+            Store.addRecord(record);
+
+            // show 'success' message
+            UI.showAlert('Record successfully added.', 'alert-success');
+
             // clear form fields
             UI.clearFields();
 
@@ -142,4 +201,13 @@ document
         
         // use 'target' to find the subject of the 'click' event
         UI.deleteRecord(e.target);
+
+        // remove from localStorage
+        // start at the event target, then traverse the DOM to get to the node we want - table row album
+        // then target the inner text or text content - TRICKY!
+        Store.removeRecord(e.target.parentElement.previousElementSibling.previousElementSibling.textContent);
+
+        // show 'success' message
+        UI.showAlert('Record successfully removed.', 'alert-success');
     });
+
